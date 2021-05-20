@@ -1,5 +1,6 @@
 ## Own custom list to ignore
 config/config.py
+test.txt
 Resources
 # Created by https://www.toptal.com/developers/gitignore/api/macos,pycharm,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,pycharm,python

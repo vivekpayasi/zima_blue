@@ -128,7 +128,20 @@ def on_message(webskt, message):
                 #    Selling situation
                 if in_position:
                     # put sell order function call here
-                    pass
+                    print('Placing a SELL order...')
+                    asset_quantity = float(EXCHANGE.fetch_balance().get('ADA').get('free'))
+                    order_succeeded = trade.place_order(side='sell', quantity=asset_quantity, symbol=TRADE_SYMBOL,
+                                                        order_type=ORDER_TYPE, params=PARAMS, exchange=EXCHANGE)
+                    if order_succeeded:
+                        print('Succeeded!')
+                        balance = balance + (asset_quantity * close)
+                        asset_quantity = 0
+                        in_position = False
+                        round_trips_count += 1
+                        trade.trip_stats(buying_price, close, balance, asset_quantity)
+                    else:
+                        print('Failed.')
+
                 else:
                     print('Already sold.')
             # STOP LOSS
