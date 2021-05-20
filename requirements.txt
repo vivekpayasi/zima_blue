@@ -1,0 +1,6 @@
+ccxt
+
+pandas
+websocket-client
+scipy
+ta
