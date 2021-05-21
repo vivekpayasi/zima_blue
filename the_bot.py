@@ -46,6 +46,21 @@ closes = [i[4] for i in past_candles]
 smooth_closes = savgol_filter(closes, 101, 3).tolist()
 
 
+def place_order(side, quantity, symbol, order_type, params, exchange, price=None):
+    global limit_order_id
+    try:
+        print('Sending order.')
+        order = exchange.create_order(side=side, amount=quantity, symbol=symbol, type=order_type, price=price,
+                                      params=params)
+        limit_order_id = order['info']['orderId']
+        print(order)
+    except Exception as e:
+        print("Error creating order")
+        print(e)
+        return False
+    return True
+
+
 def on_open(webskt):
     print('connection is opened')
 
@@ -102,7 +117,7 @@ def on_message(webskt, message):
         print('candle {} is closed at {}'.format(candles_received_count, timestamp))
         closes.append(close)
         try:
-            smooth_temp = savgol_filter(closes, 175, 3)
+            smooth_temp = savgol_filter(closes, 101, 3)
             smooth_closes.append(smooth_temp[-1])
             macd_df = MACD(pd.Series(smooth_closes))  # , window_fast=5, window_slow=7, window_sign=4
             histogram = macd_df.macd_diff().tolist()
@@ -111,8 +126,8 @@ def on_message(webskt, message):
                 if not in_position:
                     print('Placing a BUY order...')
                     # balance, price of ada -> quantity 
-                    order_succeeded = trade.place_order(side='buy', quantity=balance / close, symbol=TRADE_SYMBOL,
-                                                        order_type=ORDER_TYPE, params=PARAMS, exchange=EXCHANGE)
+                    order_succeeded = place_order(side='buy', quantity=balance / close, symbol=TRADE_SYMBOL,
+                                                  order_type=ORDER_TYPE, params=PARAMS, exchange=EXCHANGE)
                     if order_succeeded:
                         print('Succeeded!')
                         in_position = True
@@ -130,8 +145,8 @@ def on_message(webskt, message):
                     # put sell order function call here
                     print('Placing a SELL order...')
                     asset_quantity = float(EXCHANGE.fetch_balance().get('ADA').get('free'))
-                    order_succeeded = trade.place_order(side='sell', quantity=asset_quantity, symbol=TRADE_SYMBOL,
-                                                        order_type=ORDER_TYPE, params=PARAMS, exchange=EXCHANGE)
+                    order_succeeded = place_order(side='sell', quantity=asset_quantity, symbol=TRADE_SYMBOL,
+                                                  order_type=ORDER_TYPE, params=PARAMS, exchange=EXCHANGE)
                     if order_succeeded:
                         print('Succeeded!')
                         balance = balance + (asset_quantity * close)
@@ -149,7 +164,7 @@ def on_message(webskt, message):
                 print('Current price is below the Stoploss Threshold. Selling all the quantity.')
                 print('Placing a SELL order...')
                 asset_quantity = float(EXCHANGE.fetch_balance().get('ADA').get('free'))
-                order_succeeded = trade.place_order(side='sell', quantity=asset_quantity, symbol=TRADE_SYMBOL,
+                order_succeeded = place_order(side='sell', quantity=asset_quantity, symbol=TRADE_SYMBOL,
                                                     order_type=ORDER_TYPE, params=PARAMS, exchange=EXCHANGE)
                 if order_succeeded:
                     print('Succeeded!')

@@ -1,15 +1,15 @@
-def place_order(side, quantity, symbol, order_type, params, exchange, price=None):
-    try:
-        print('Sending order.')
-        order = exchange.create_order(side=side, amount=quantity, symbol=symbol, type=order_type, price=price,
-                                      params=params)
-        limit_order_id = order['info']['orderId']
-        print(order)
-    except Exception as e:
-        print("Error creating order")
-        print(e)
-        return False, None
-    return True, limit_order_id
+# def place_order(side, quantity, symbol, order_type, params, exchange, price=None):
+#     try:
+#         print('Sending order.')
+#         order = exchange.create_order(side=side, amount=quantity, symbol=symbol, type=order_type, price=price,
+#                                       params=params)
+#         limit_order_id = order['info']['orderId']
+#         print(order)
+#     except Exception as e:
+#         print("Error creating order")
+#         print(e)
+#         return False, None
+#     return True, limit_order_id
 
 
 def place_sell_order(base_currency, qoute_currency, order_type, params, exchange, ):

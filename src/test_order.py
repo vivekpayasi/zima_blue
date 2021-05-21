@@ -1,4 +1,4 @@
-import config
+from config import config
 import ccxt
 import json
 import pprint
@@ -11,8 +11,8 @@ exchange = ccxt.binance({
 })
 
 symbol = 'ADA/USDT'
-order_type = 'limit'  # or 'market'
-side = 'sell'  # or 'buy'
+order_type = 'market'  # or 'market'
+side = 'buy'  # or 'buy'
 amount = 10
 price = None  # 0.60154  # or None
 
@@ -22,12 +22,12 @@ params = {
 }
 
 # Place order
-# order = exchange.create_order(symbol, type, side, amount, price, params)
-# print(order)
+order = exchange.create_order(symbol, order_type, side, amount, price, params)
+pprint.pprint(order)
 
 # balance = float(exchange.fetch_balance().get('ADA').get('free'))
 # print(balance)
 
-order_info = exchange.fetchOrder('1509719787', symbol=symbol)
-pprint.pprint(order_info)
+# order_info = exchange.fetchOrder('1509719787', symbol=symbol)
+# pprint.pprint(order_info)
 # print(json_order)
